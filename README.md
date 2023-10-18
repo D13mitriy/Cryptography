@@ -1,2 +1,2 @@
 # Cryptography
-This repo is intended for training projects/
+This repo is intended for storing of training projects in Cryptography.

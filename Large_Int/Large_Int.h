@@ -21,25 +21,7 @@
 #define _15nybl(x) ((x) & (0xf000000000000000ull))/*16th nybl*/
 
 
-enum hex
-{
-	_0x0 = 0x0ull,
-	_0x1 = 0x1ull,
-	_0x2 = 0x2ull,
-	_0x3 = 0x3ull,
-	_0x4 = 0x4ull,
-	_0x5 = 0x5ull,
-	_0x6 = 0x6ull,
-	_0x7 = 0x7ull,
-	_0x8 = 0x8ull,
-	_0x9 = 0x9ull,
-	_0xa = 0xAull,
-	_0xb = 0xBull,
-	_0xc = 0xCull,
-	_0xd = 0xDull,
-	_0xe = 0xEull,
-	_0xf = 0xFull
-};
+
 
 using ull  = unsigned long long;
 using uf64 =      uint_fast64_t;
@@ -55,9 +37,15 @@ public:
 
 	//getter && setter methods
 	Large_int() {};
-	Large_int(std::string value);
-	void set_hex(std::string);
-	void get_hex();
+	Large_int(const std::string& value);
+	void set_hex(const std::string& value);
+	void set_chank(std::string::const_iterator begin, std::string::const_iterator end);
+
+	friend std::string binaty_to_hex(const uf64& block);
+	std::string get_hex() const;
+	friend std::ostream& operator <<(std::ostream& output, const Large_int& s);
+	
+	
 	void print_hex();
 	void print_hexchar();
 
@@ -93,11 +81,34 @@ public:
 	Large_int powmod(const Large_int& r, const size_t& mod) const;
 private:
 	std::vector<uf64> value_;
+
+	enum class hex
+	{
+		_0x0 = 0x0ull,
+		_0x1 = 0x1ull,
+		_0x2 = 0x2ull,
+		_0x3 = 0x3ull,
+		_0x4 = 0x4ull,
+		_0x5 = 0x5ull,
+		_0x6 = 0x6ull,
+		_0x7 = 0x7ull,
+		_0x8 = 0x8ull,
+		_0x9 = 0x9ull,
+		_0xa = 0xAull,
+		_0xb = 0xBull,
+		_0xc = 0xCull,
+		_0xd = 0xDull,
+		_0xe = 0xEull,
+		_0xf = 0xFull
+	};
+	uf64 hex_to_binary(char hex_digit);
+
+	
 	union Nybls
 	{
 		uf64 first : 4;
 		uf64 other : 4;
-		uf64 therd : 4;
+		uf64 third : 4;
 		uf64 fourth : 4;
 		uf64 fifth : 4;
 		uf64 sixth : 4;
@@ -114,27 +125,22 @@ private:
 
 		Nybls(uf64 num)
 		{
-			sixteenth  = nybl(num);
-			fifteenth  = get4(num);
-			fourteenth = get4(num);
-			thirteenth = get4(num);
-			twelfth    = get4(num);
-			eleventh   = get4(num);
-			tenth      = get4(num);
-			ninth	   = get4(num);
-			eighth	   = get4(num);
-			seventh	   = get4(num);
-			sixth	   = get4(num);
-			fifth	   = get4(num);
-			fourth     = get4(num);
-			therd      = get4(num);
-			other	   = get4(num);
-			first      = get4(num);
-		}
+			sixteenth  =  _0nybl(num)  >>   (0 * 4);
+			fifteenth  =  _1nybl(num)  >>   (1 * 4);
+			fourteenth =  _2nybl(num)  >>   (2 * 4);
+			thirteenth =  _3nybl(num)  >>   (3 * 4);
+			twelfth    =  _4nybl(num)  >>   (4 * 4);
+			eleventh   =  _5nybl(num)  >>   (5 * 4);
+			tenth      =  _6nybl(num)  >>   (6 * 4);
+			ninth      =  _7nybl(num)  >>   (7 * 4);
+			eighth     =  _8nybl(num)  >>   (8 * 4);
+			seventh    =  _9nybl(num)  >>   (9 * 4);
+			sixth      = _10nybl(num)  >>  (10 * 4);
+			fifth      = _11nybl(num)  >>  (11 * 4);
+			fourth     = _12nybl(num)  >>  (12 * 4);
+			third      = _13nybl(num)  >>  (13 * 4);
+			other      = _14nybl(num)  >>  (14 * 4);
+			first      = _15nybl(num)  >>  (15 * 4);
+		};
 	};
-
-
-
-
-
 };

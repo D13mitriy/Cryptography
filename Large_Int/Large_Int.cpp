@@ -153,7 +153,6 @@ size_t chanks(const size_t size)
 
 void Large_int::set_hex(const std::string& value)
 {
-	//using retType = decltype;
 	const size_t n_blocks = chanks(value.size());
 	auto chank_start = value.begin();
 	auto   chank_end = value.begin();
@@ -162,27 +161,20 @@ void Large_int::set_hex(const std::string& value)
 		std::string substr(value, static_cast<size_t>(idx * 16), static_cast<size_t>(16));
 		chank_start = substr.begin();
 		chank_end = substr.end();
-		//
-		//std::advance(chank_start, static_cast<int>(idx * 16));
-		//std::advance(chank_end, static_cast<int>(std::distance(chank_start, chank_start + 16))||(std::string::npos));
+	
 		this->set_chank(chank_start, chank_end);
-		//auto res = std::async(std::launch::async, &Large_int::set_chank, this, chank_start, chank_end);
-		//hex_chanks.push_back(res);
+		
 	}
 
-	/*/for (auto& chank : hex_chanks)
-	{
-		chank.get();
-	}*/
 }
 
 std::ostream& operator <<(std::ostream& output, const Large_int& s)
 {
-	output << "0x" << s.get_hex();
-	/*for (const auto& block : s.value_)
+	output << "0x";// << s.get_hex();
+	for (const auto& block : s.value_)
 	{
 		output << std::hex << block;
-	}*/
+	}
 	return output;
 }
 

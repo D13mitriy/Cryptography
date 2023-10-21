@@ -5,87 +5,13 @@
 #include <future>
 #include <iterator>
 #include <utility>
+#include <sstream>
 #include "Large_Int.h"
 
 
+#define  NYBL_SIZE 4ull
+#define BLOCK_SIZE 16ull
 
-
-
-
-
-char to_char(uf64 num)
-{
-	switch (num)
-	{
-	case 0: return '0';
-		break;
-	case 1: return '1';
-		break;
-	case 2: return '2';
-		break;
-	case 3: return '3';
-		break;
-	case 4: return '4';
-		break;
-	case 5: return '5';
-		break;
-	case 6: return '6';
-		break;
-	case 7: return '7';
-		break;
-	case 8: return '8';
-		break;
-	case 9: return '9';
-		break;
-	case 10: return 'a';
-		break;
-	case 11: return 'b';
-		break;
-	case 12: return 'c';
-		break;
-	case 13: return 'd';
-		break;
-	case 14: return 'e';
-		break;
-	case 15: return 'f';
-		break;
-	default:  std::cout << "Invalid value!" << std::endl;
-	}
-	return 16;
-}
-
-std::string binaty_to_hex(const uf64& block)
-{
-	std::string result;
-	Large_int::Nybls digit(block);
-	result.push_back(to_char(digit.first));
-	result.push_back(to_char(digit.other));
-	result.push_back(to_char(digit.third));
-	result.push_back(to_char(digit.fourth));
-	result.push_back(to_char(digit.fifth));
-	result.push_back(to_char(digit.sixth));
-	result.push_back(to_char(digit.seventh));
-	result.push_back(to_char(digit.eighth));
-	result.push_back(to_char(digit.ninth));
-	result.push_back(to_char(digit.tenth));
-	result.push_back(to_char(digit.eleventh));
-	result.push_back(to_char(digit.twelfth));
-	result.push_back(to_char(digit.thirteenth));
-	result.push_back(to_char(digit.fourteenth));
-	result.push_back(to_char(digit.fifteenth));
-	result.push_back(to_char(digit.sixteenth));
-	return result;
-}
-
-std::string Large_int::get_hex() const
-{
-	std::string result;
-	for (const auto& block : value_)
-	{
-		result += binaty_to_hex(block);
-	}
-	return result;
-}
 
 uf64 Large_int::hex_to_binary(char hex_digit)
 {
@@ -128,21 +54,17 @@ uf64 Large_int::hex_to_binary(char hex_digit)
 	return hex_digit;
 }
 
-void Large_int::set_chank(std::string::const_iterator begin, std::string::const_iterator end)
+uf64 Large_int::set_chank(std::string::const_iterator begin, std::string::const_iterator end)
 {
 	uf64 block = 0x0ull;
-	size_t shift = 64 - static_cast<size_t>(4); // Each hexadecimal digit takes 4 bits. So, we have to shift the buffer by four bits to the left each time 
-	                                 //we translate hexadecimal digit into its binary representation.
-	for (;begin != end; ++begin)
+	for (; begin != end; ++begin)
 	{
+		block <<= NYBL_SIZE;
 		uf64 nymbl = 0x0ull;
 		nymbl  |= hex_to_binary(*begin);
-		nymbl <<= shift;
 		block |= nymbl;
-		shift -= static_cast<size_t>(4);
 	}
-	block &= static_cast<uf64>(0xffffffffffffffff);
-	value_.push_back(block);
+	return block;
 }
 size_t chanks(const size_t size)
 {
@@ -154,23 +76,28 @@ size_t chanks(const size_t size)
 void Large_int::set_hex(const std::string& value)
 {
 	const size_t n_blocks = chanks(value.size());
-	auto chank_start = value.begin();
-	auto   chank_end = value.begin();
+	value_.resize(n_blocks);
+	using const_it = std::string::const_iterator;
+	auto hex_rbegin  = value.rbegin();
+	auto hex_rend    =   value.rend();
+	
 	for (size_t idx = 0, vector_size = n_blocks; idx < vector_size; ++idx)
 	{
-		std::string substr(value, static_cast<size_t>(idx * 16), static_cast<size_t>(16));
-		chank_start = substr.begin();
-		chank_end = substr.end();
-	
-		this->set_chank(chank_start, chank_end);
-		
-	}
+			const_it chank_start = hex_rend.base();
+			const_it chank_end = hex_rbegin.base();
+			if (!(static_cast<ull>(std::distance(chank_start, chank_end)) < BLOCK_SIZE))
+			{
+				chank_start = chank_end - BLOCK_SIZE;
+				hex_rbegin += BLOCK_SIZE;
+			} 
 
+			value_[vector_size - 1 - idx]=this->set_chank(chank_start, chank_end);
+	}
 }
 
-std::ostream& operator <<(std::ostream& output, const Large_int& s)
+std::ostream& operator<<(std::ostream& output, const Large_int& s)
 {
-	output << "0x";// << s.get_hex();
+	output << "0x";
 	for (const auto& block : s.value_)
 	{
 		output << std::hex << block;
@@ -178,13 +105,31 @@ std::ostream& operator <<(std::ostream& output, const Large_int& s)
 	return output;
 }
 
+std::string Large_int::get_hex() const
+{
+	std::ostringstream result;
+	result << *this;
+	std::stringbuf* sb = result.rdbuf();
+	return sb->str();
+}
+
 int main()
 {
-	std::string v = "8e5a08b2701ab3fb4eb89427d82f3";
+	std::string v = "b2701acfaef3fbfc4567b8a300526";
 	Large_int ff;
 	ff.set_hex(v);
 	std::cout << ff << std::endl;
-    
+	std::string s = ff.get_hex();
+	std::string::const_reverse_iterator rb = s.rbegin();
+	std::string::const_reverse_iterator re = s.rend();
+	
+
+	while (rb!= re)
+	{
+		std::cout << *rb;
+		++rb;
+	}
+	std::cout << std::endl;
 
 
 	return 0;

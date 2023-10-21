@@ -3,51 +3,25 @@
 #include <vector>
 #include <iostream>
 
-#define _0nybl(x)  ((x) & (0xfull)) /*1st nybl*/
-#define _1nybl(x)  ((x) & (0xf0ull))/*2d nybl*/
-#define _2nybl(x)  ((x) & (0xf00ull))/*3d nybl*/
-#define _3nybl(x)  ((x) & (0xf000ull))/*4th nybl*/
-#define _4nybl(x)  ((x) & (0xf0000ull))/*5th nybl*/
-#define _5nybl(x)  ((x) & (0xf00000ull))/*6th nybl*/
-#define _6nybl(x)  ((x) & (0xf000000ull))/*7th nybl*/
-#define _7nybl(x)  ((x) & (0xf0000000ull))/*8th nybl*/
-#define _8nybl(x)  ((x) & (0xf00000000ull))/*9th nybl*/
-#define _9nybl(x)  ((x) & (0xf000000000ull))/*10th nybl*/
-#define _10nybl(x) ((x) & (0xf0000000000ull))/*11th nybl*/
-#define _11nybl(x) ((x) & (0xf00000000000ull))/*12th nybl*/
-#define _12nybl(x) ((x) & (0xf000000000000ull))/*13th nybl*/
-#define _13nybl(x) ((x) & (0xf0000000000000ull))/*14th nybl*/
-#define _14nybl(x) ((x) & (0xf00000000000000ull))/*15th nybl*/
-#define _15nybl(x) ((x) & (0xf000000000000000ull))/*16th nybl*/
-
-
-
 
 using ull  = unsigned long long;
 using uf64 =      uint_fast64_t;
 using uf8  =       uint_fast8_t;
 
-#define nybl(x) ((x) & (0b1111))
-#define shr4(x) ((x) >>= (4))
-#define get4(x) (nybl(shr4(x)))
 
 class Large_int
 {
 public:
-
-	//getter && setter methods
 	Large_int() {};
 	Large_int(const std::string& value);
-	void set_hex(const std::string& value);
-	void set_chank(std::string::const_iterator begin, std::string::const_iterator end);
 
-	friend std::string binaty_to_hex(const uf64& block);
+	//getter && setter methods
+	void set_hex(const std::string& value);
+	uf64 set_chank(std::string::const_iterator begin, std::string::const_iterator end);	
 	std::string get_hex() const;
+
 	friend std::ostream& operator <<(std::ostream& output, const Large_int& s);
-	
-	
-	void print_hex();
-	void print_hexchar();
+		
 
     // bitwice methods
 	Large_int operator~() const;
@@ -81,7 +55,6 @@ public:
 	Large_int powmod(const Large_int& r, const size_t& mod) const;
 private:
 	std::vector<uf64> value_;
-
 	enum class hex
 	{
 		_0x0 = 0x0ull,
@@ -102,45 +75,4 @@ private:
 		_0xf = 0xFull
 	};
 	uf64 hex_to_binary(char hex_digit);
-
-	
-	union Nybls
-	{
-		uf64 first : 4;
-		uf64 other : 4;
-		uf64 third : 4;
-		uf64 fourth : 4;
-		uf64 fifth : 4;
-		uf64 sixth : 4;
-		uf64 seventh : 4;
-		uf64 eighth : 4;
-		uf64 ninth : 4;
-		uf64 tenth : 4;
-		uf64 eleventh : 4;
-		uf64 twelfth : 4;
-		uf64 thirteenth : 4;
-		uf64 fourteenth : 4;
-		uf64 fifteenth : 4;
-		uf64 sixteenth : 4;
-
-		Nybls(uf64 num)
-		{
-			sixteenth  =  _0nybl(num)  >>   (0 * 4);
-			fifteenth  =  _1nybl(num)  >>   (1 * 4);
-			fourteenth =  _2nybl(num)  >>   (2 * 4);
-			thirteenth =  _3nybl(num)  >>   (3 * 4);
-			twelfth    =  _4nybl(num)  >>   (4 * 4);
-			eleventh   =  _5nybl(num)  >>   (5 * 4);
-			tenth      =  _6nybl(num)  >>   (6 * 4);
-			ninth      =  _7nybl(num)  >>   (7 * 4);
-			eighth     =  _8nybl(num)  >>   (8 * 4);
-			seventh    =  _9nybl(num)  >>   (9 * 4);
-			sixth      = _10nybl(num)  >>  (10 * 4);
-			fifth      = _11nybl(num)  >>  (11 * 4);
-			fourth     = _12nybl(num)  >>  (12 * 4);
-			third      = _13nybl(num)  >>  (13 * 4);
-			other      = _14nybl(num)  >>  (14 * 4);
-			first      = _15nybl(num)  >>  (15 * 4);
-		};
-	};
 };

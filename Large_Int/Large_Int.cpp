@@ -1,17 +1,31 @@
-#include <iostream>
-#include <ios>
-#include <string>
-#include <bitset>
-#include <future>
-#include <iterator>
-#include <utility>
-#include <sstream>
 #include "Large_Int.h"
 
 
 #define  NYBL_SIZE 4ull
 #define BLOCK_SIZE 16ull
 
+Large_int::Large_int(const std::string& hv)
+{
+	set_hex(hv);
+}
+
+
+inline void Large_int::set_digits(const std::string & hex_val)
+{
+	digits = hex_val.length();
+}
+
+size_t Large_int::get_number_of_hex_digits() const
+{
+	size_t v_size = this->value_.size() - 1;
+	v_size = (v_size * 16) + (16 - nymbl_front_pos);
+	return v_size;
+}
+
+size_t Large_int::get_digits() const
+{
+	return this->digits;
+}
 
 uf64 Large_int::hex_to_binary(char hex_digit)
 {
@@ -66,15 +80,18 @@ uf64 Large_int::set_chank(std::string::const_iterator begin, std::string::const_
 	}
 	return block;
 }
-size_t chanks(const size_t size)
+size_t Large_int::chanks(const size_t size)
 {
 	const size_t nchanks = size / static_cast<size_t>(16);       // 16 is total ammount of hex digits(string symbols) 
-	const size_t    tail = (size % static_cast<size_t>(16)) && 1; //is suetable to be placed into one variable of type uf64.
-	return (nchanks + tail);
+	const size_t    tail = (size % static_cast<size_t>(16)); //is suetable to be placed into one variable of type uf64.
+	this->nymbl_front_pos = 16 - tail;
+	const size_t t = tail && 1;
+	return (nchanks + t);
 }
 
 void Large_int::set_hex(const std::string& value)
 {
+	set_digits(value);
 	const size_t n_blocks = chanks(value.size());
 	value_.resize(n_blocks);
 	using const_it = std::string::const_iterator;
@@ -112,25 +129,41 @@ std::string Large_int::get_hex() const
 	std::stringbuf* sb = result.rdbuf();
 	return sb->str();
 }
-
-int main()
+void rprint(const std::string& s)
 {
-	std::string v = "b2701acfaef3fbfc4567b8a300526";
-	Large_int ff;
-	ff.set_hex(v);
-	std::cout << ff << std::endl;
-	std::string s = ff.get_hex();
 	std::string::const_reverse_iterator rb = s.rbegin();
 	std::string::const_reverse_iterator re = s.rend();
-	
 
-	while (rb!= re)
+
+	while (rb != re)
 	{
 		std::cout << *rb;
 		++rb;
 	}
 	std::cout << std::endl;
+}
 
 
+
+/*
+int main()
+{
+	std::cout << sizeof(size_t) << "\n";
+	size_t v1 = 0xffffffffffffffff;
+	printf("%zu", v1);
+	std::string v = "b2701acfaef3fbfc4567b8a300526", x = "e035c6cfa42609b998b883bc1699df885cef74e2b2cc372eb8fa7e7";
+	Large_int dd(x);
+	Large_int ff;
+	ff.set_hex(v);
+
+	std::cout << "v:" << ff << "\n"; std::cout << std::dec << "digits:" << ff.get_digits() << "\t" << "digits_calculated:" << ff.get_number_of_hex_digits() << std::endl;
+	std::cout << "x:" << dd << "\n"; std::cout << std::dec << "digits:" << dd.get_digits() << "\t" << "digits_calculated:" << dd.get_number_of_hex_digits() << std::endl;
+	
+	
+	rprint(ff.get_hex());
+	rprint(dd.get_hex());
+	
+	
 	return 0;
 }
+*/

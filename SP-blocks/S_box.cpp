@@ -45,27 +45,27 @@ void initialize_inv_sbox(uint8_t inv_sbox[256])
 
 void s_box_encription(const char* plain_text, uint8_t sbox[256], char * cipher)
 {
-	while (*plain_text != '\0')
+	size_t p_size = strlen(plain_text), idx = 0;
+	while (idx < p_size)
 	{
-		*cipher = sbox[(uint8_t)*plain_text];
-		++cipher;
-		++plain_text;
+		cipher[idx] = sbox[(uint8_t)plain_text[idx]];
+		++idx;
 	}
 }
 
 void s_box_decription(const char* cipher_text, uint8_t sbox[256], char* plain_text)
 {
 	std::unordered_map<uint8_t, uint8_t> s_box_map;
-	unsigned int idx = 0;
+	size_t idx = 0, cipher_size = strlen(cipher_text);
 	while (idx < 256)
 	{
 		s_box_map.insert({(uint8_t)sbox[idx], (uint8_t)idx});
 		++idx;
 	}
-	for (; *cipher_text != '\0'; ++cipher_text, ++plain_text)
+	for (idx = 0; idx < cipher_size; ++idx)
 	{
 		
-		*plain_text = (char)s_box_map.at((uint8_t)*cipher_text);
+		plain_text[idx] = (char)s_box_map.at((uint8_t)cipher_text[idx]);
 	}
 }
 

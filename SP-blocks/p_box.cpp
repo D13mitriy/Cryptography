@@ -1,4 +1,3 @@
-/*
 #include <iostream>
 using namespace std;
 
@@ -41,4 +40,4 @@ int main() {
 		cout << Encrypt1[i];
 	}
 	return 0;
-}*/
+}

@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <ios>
 #include <iostream>
-#include <algorithm>
 #include <unordered_map>
 #define ROTL8(x,shift) ((uint8_t) ((x) << (shift)) | ((x) >> (8 - (shift))))
 
@@ -51,6 +50,7 @@ void s_box_encription(const char* plain_text, uint8_t sbox[256], char * cipher)
 		cipher[idx] = sbox[(uint8_t)plain_text[idx]];
 		++idx;
 	}
+	//cipher[idx] = '\0';
 }
 
 void s_box_decription(const char* cipher_text, uint8_t sbox[256], char* plain_text)
@@ -67,6 +67,7 @@ void s_box_decription(const char* cipher_text, uint8_t sbox[256], char* plain_te
 		
 		plain_text[idx] = (char)s_box_map.at((uint8_t)cipher_text[idx]);
 	}
+	//plain_text[idx] = '\0';
 }
 
 void print_cs(const char* cstring)
@@ -83,16 +84,21 @@ int main()
 {
 	uint8_t sb[256];
 	initialize_sbox(sb);
-
+	//const char* myplaintext = "Plain-text.";
 	const char* myplaintext = "This is a string intended to be encripted and then decripted using forward substitution table s-box and inverse s-box table, respectivly.";
-	unsigned int cipher_size = strlen(myplaintext);
-	char* cipher = new char[cipher_size];
-	char* plain = new char[cipher_size];
+	unsigned int plain_size = strlen(myplaintext);
+	char* cipher = new char[plain_size + 1];
+	cipher[plain_size] = '\0';
+	char* plain = new char[plain_size + 1];
+	plain[plain_size] = '\0';
 	s_box_encription(myplaintext, sb, cipher);
+	size_t cipher_size = strlen(cipher);
+	std::cout << "plain text size:" << plain_size << "\t" << "cipher text size:" << cipher_size << std::endl;
 	print_cs(myplaintext);
 	print_cs(cipher);
 	s_box_decription(cipher, sb, plain);
-	print_cs(plain);
+	std::cout << plain << std::endl;
+	//print_cs(plain);
 	delete [] cipher;
 	delete [] plain;
 	return 0;
